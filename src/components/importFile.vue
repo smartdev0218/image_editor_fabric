@@ -1,0 +1,144 @@
+<template>
+    <DropdownItem @click="insertImg"><Icon type="ios-image" /><span style="margin-left:10px">Upload image</span></DropdownItem>
+</template>
+
+<script>
+import { getImgStr, selectFiles,downFontByJSON } from '@/utils/utils';
+import select from '@/mixins/select';
+import { v4 as uuid } from 'uuid';
+import {emptyData,bgImg} from '@/utils/imgConstant' 
+import axios from "axios";
+export default {
+  name: 'ToolBar',
+  mixins: [select],
+  inject:["path","param_id"],
+  data() {
+    return {
+      showModal: false,
+      svgStr: ''
+    };
+  },
+  created() {
+    this.event.on('selectOne', (items) => {
+      this.isLock = !items[0].hasControls;
+      this.mSelectActive = items[0];
+    });
+  },
+  mounted(){
+    if(this.path.slice(8) == "create"){
+      this.insertEmptyFile(emptyData);
+    }else{
+      this.insertFileFromJSON(this.param_id);
+    }
+    
+  },  
+  methods: {
+    insertTypeHand(type) {
+      this[type]();
+    },
+    // insert picture
+    insertImg() {
+      selectFiles({ accept: 'image/*', multiple: true }).then((fileList) => {
+        Array.from(fileList).forEach((item) => {
+          getImgStr(item).then((file) => {
+            this.insertImgFile(file,"normal");
+          });
+        });
+      });
+    },
+    // insert empty file
+    insertEmptyFile(file,type) {
+       setTimeout(() => {
+        
+          const imgEl = document.createElement('img');
+          imgEl.src = file || this.imgFile;
+          document.body.appendChild(imgEl);
+          imgEl.onload = () => {
+            // Create a picture object
+            const imgInstance = new this.fabric.Image(imgEl, {
+              id: "showBg",
+              name: 'picture1',
+            });
+            imgInstance.scale(0.4);
+            // set zoom
+            this.canvas.c.add(imgInstance);
+            this.canvas.c.centerObject(imgInstance);
+            this.canvas.c.setActiveObject(imgInstance);
+            this.canvas.c.renderAll();
+            // Remove image elements from the page
+            imgEl.remove();
+        };          
+      }, 100);
+
+    },    
+    
+    // insert image file
+    insertImgFile(file) {
+      const imgEl = document.createElement('img');
+      imgEl.src = file || this.imgFile;
+      // insert page
+      document.body.appendChild(imgEl);
+      imgEl.onload = () => {
+        // Create a picture object
+        const imgInstance = new this.fabric.Image(imgEl, {
+          id: uuid(),
+          name: 'picture1',
+          selectable:false,
+          hasControls:false,
+          left:-100
+        }).setCoords();
+
+        var rect = new fabric.Rect({
+            height: 0,
+            width: 0,
+            fill: '',
+            strokeWidth:0,
+            opacity: 100,
+            id:"virtural"
+        });      
+
+        var group = new fabric.Group([rect, imgInstance]);
+        group.id = uuid();
+        group.name = 'picture';
+        group.set("left",0-group.width);
+        this.canvas.c.add(group);
+        rect.set("width",group.width*group.scaleX);
+        rect.set("height",group.height*group.scaleY);
+        this.canvas.c.setActiveObject(group);
+        this.canvas.c.renderAll();
+
+        // // Remove image elements from the page
+        imgEl.remove();
+      };
+    },
+    insertFileFromJSON(id){
+      axios.get('http://localhost:3000/feed-image/'+id)
+        .then(resp => {
+            var data = resp.data;
+            var jsonFile = JSON.stringify(data);
+            downFontByJSON(jsonFile).then(() => {
+                this.canvas.c.loadFromJSON(jsonFile, () => {
+                  this.canvas.c.renderAll.bind(canvas.c);
+                    const workspace = this.canvas.c.getObjects().find((item) => item.id === 'workspace');
+                    const { left, top, width, height } = workspace;                  
+                    workspace.set('selectable', false);
+                    workspace.set('hasControls', false);
+                    this.canvas.c.requestRenderAll();
+                    this.canvas.c.renderAll();
+                });
+              });          
+        })
+        .catch(error => {
+            console.log(error);
+      }); 
+    }
+  }
+
+};
+</script>
+
+<style scoped lang="less">
+/deep/ .ivu-select-dropdown {
+  z-index: 999;
+}
+</style>
