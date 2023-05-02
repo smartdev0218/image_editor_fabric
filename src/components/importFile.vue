@@ -104,6 +104,7 @@ export default {
         this.canvas.c.add(group);
         rect.set("width",group.width*group.scaleX);
         rect.set("height",group.height*group.scaleY);
+        this.canvas.c.centerObject(group);
         this.canvas.c.setActiveObject(group);
         this.canvas.c.renderAll();
 

@@ -99,6 +99,7 @@ export default {
       this.canvas.c.add(group);
       rect.set("width",group.width*group.scaleX+5);
       rect.set("height",group.height*group.scaleY+5);
+      this.canvas.c.centerObject(group);
       this.canvas.c.setActiveObject(group);
     },
     addImg(e) {
@@ -124,6 +125,7 @@ export default {
       if (!option) {
         text.center();
       }
+      this.canvas.c.centerObject(text);
       this.canvas.c.setActiveObject(text);
     },
     addTriangle(option) {
@@ -148,6 +150,7 @@ export default {
         name: 'circle',
       });
       this.canvas.c.add(circle);
+      this.canvas.c.centerObject(circle);
       this.canvas.c.setActiveObject(circle);
     },
     addRect(option) {
@@ -160,6 +163,7 @@ export default {
         name: 'rect',
       });
       this.canvas.c.add(rect);
+      this.canvas.c.centerObject(rect);
       this.canvas.c.setActiveObject(rect);
     },
     drawingLineModeSwitch(isArrow) {
