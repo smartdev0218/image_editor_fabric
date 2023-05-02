@@ -383,7 +383,6 @@ export default {
  
     this.event.on('selectUpdate', () => {
       if(this.canvas.c.getActiveObject().name == "picture"){
-        console.log("asdfasdf")
         this.canvas.c.getActiveObject().clipState = this.imageShowMode;
       }
     });
@@ -641,12 +640,9 @@ export default {
       var diff = left+(activeObject.width/2*scale);
 
       if(scale <= height/imgH){
-        console.log("cale")
         scale = height/imgH; 
         top = 0 - (imgH*scale) / 2;
-        console.log(diff,-(activeObject.width/2*scale))
         left =   -(activeObject._objects.width*activeObject.scaleX/2)
-        console.log(-(activeObject.width/2*scale)+diff )
       }
 
       activeObject.set("height", height);

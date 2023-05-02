@@ -74,8 +74,6 @@ export default {
   },  
   mounted(){
 
-    console.log("asdfasdf");
-    console.log(this.list);
 
   },
   methods: {
@@ -94,7 +92,6 @@ export default {
         this.canvas.c.setViewportTransform([1, 0, 0, 1, 0, 0]);
         const dataUrl = this.canvas.c.toDataURL(option);
         document.getElementById("preview1").src = dataUrl;
-        console.log(dataUrl);
         // this.renderCanvas(this.list[this.list.length-1]);
 
     },

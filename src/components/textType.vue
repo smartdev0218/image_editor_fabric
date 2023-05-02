@@ -629,19 +629,16 @@ export default {
             if(evt == 'shorten'){
               this.showModeText = "shorten"
               if(150 >=string.length && string.length >= 50){
-                console.log("150")
                 activeObject.set("fontSize",21);
                 this.canvas.c.renderAll();
                 return;
               }
               if(250>=string.length&&string.length >= 150){
-                console.log("250")
                 activeObject.set("fontSize",18);
                 this.canvas.c.renderAll();
                 return;
               }
               if(350>=string.length&&string.length >= 250){
-                console.log("350")
                 activeObject.set("fontSize",16);
                 this.canvas.c.renderAll();
                 return;
@@ -743,8 +740,6 @@ export default {
               this.activeObject._objects[0].set("left",-(this.activeObject.width/2));    
               this.activeObject._objects[0].set("height",this.activeObject.height);              
               this.activeObject._objects[0].set("top",-(this.activeObject.height / 2));
-              console.log(this.fontAttr);
-              console.log(this.activeObject._objects[0])
               this.canvas.c.requestRenderAll();
               this.reSetObj();
               return;
@@ -813,7 +808,6 @@ export default {
                 return;
             }
             if(key == "fill"){
-              console.log("asdfsdaf")
               this.activeObject = this.canvas.c.getActiveObject()._objects[1];
               this.activeObject.set("fill", evt)
               this.canvas.c.renderAll();

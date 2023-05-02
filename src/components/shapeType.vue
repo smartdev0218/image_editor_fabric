@@ -296,7 +296,6 @@ export default {
       }      
     },
     changeBorderState(value){
-      console.log(value);
       if(value == false){
         const activeObject = this.canvas.c.getActiveObject();
         activeObject.set('stroke','');
