@@ -463,9 +463,10 @@ export default {
       
       activeObject.set("width",this.baseAttr.width);
       activeObject.set("height",this.baseAttr.height);
+      
       this.canvas.c.renderAll();
+
       if(value == "clip"){
-           
         if(this.imageShowMode == "clip"){
           return;
         }else{
@@ -494,9 +495,6 @@ export default {
 
         this.canvas.c.renderAll();
       }
-
-        
-      // }
 
     },
     //emptyImage
@@ -582,15 +580,15 @@ export default {
     imgWidthClip(width){
       var imgW = this.canvas.c.getActiveObject()._objects[1].getElement().width;
       var imgH = this.canvas.c.getActiveObject()._objects[1].getElement().height;
-      this.canvas.c.getActiveObject().set("scaleX",1);
-      this.canvas.c.getActiveObject().set("scaleY",1);
-      this.canvas.c.getActiveObject()._objects[1].set("scaleY",1);      
-      this.canvas.c.getActiveObject()._objects[1].set("scaleY",1);         
+      // this.canvas.c.getActiveObject().set("scaleX",1);
+      // this.canvas.c.getActiveObject().set("scaleY",1);
+      // this.canvas.c.getActiveObject()._objects[1].set("scaleY",1);      
+      // this.canvas.c.getActiveObject()._objects[1].set("scaleY",1);         
       const activeObject = this.canvas.c.getActiveObjects()[0];
-      activeObject._objects[1].set({
-        left:activeObject._objects[1].left/activeObject._objects[1].scaleX,
-        top:activeObject._objects[1].top/activeObject._objects[1].scaleX,
-      });          
+      // activeObject._objects[1].set({
+      //   left:activeObject._objects[1].left/activeObject._objects[1].scaleX,
+      //   top:activeObject._objects[1].top/activeObject._objects[1].scaleX,
+      // });          
       var scale = activeObject._objects[1].scaleX;
       activeObject.set("width", width);
       activeObject._objects[1].set("scaleX",scale)
@@ -624,16 +622,17 @@ export default {
 
     imgHeightClip(height){
       const activeObject = this.canvas.c.getActiveObjects()[0];
-      this.canvas.c.getActiveObject().set("scaleX",1);
-      this.canvas.c.getActiveObject().set("scaleY",1);      
-      this.canvas.c.getActiveObject()._objects[1].set("scaleY",1);      
-      this.canvas.c.getActiveObject()._objects[1].set("scaleY",1);      
       var imgW = this.canvas.c.getActiveObject()._objects[1].getElement().width;
-      var imgH = this.canvas.c.getActiveObject()._objects[1].getElement().height;      
-      activeObject._objects[1].set({
-        left:activeObject._objects[1].left/activeObject._objects[1].scaleX,
-        top:activeObject._objects[1].top/activeObject._objects[1].scaleX,
-      });      
+      var imgH = this.canvas.c.getActiveObject()._objects[1].getElement().height;         
+      // this.canvas.c.getActiveObject().set("scaleX",1);
+      // this.canvas.c.getActiveObject().set("scaleY",1);      
+      // this.canvas.c.getActiveObject()._objects[1].set("scaleY",1);      
+      // this.canvas.c.getActiveObject()._objects[1].set("scaleY",1);      
+   
+      // activeObject._objects[1].set({
+      //   left:activeObject._objects[1].left/activeObject._objects[1].scaleX,
+      //   top:activeObject._objects[1].top/activeObject._objects[1].scaleX,
+      // });      
       var scale = this.baseAttr.width/imgW;
       var top = 0 - (imgH*scale) / 2;
       var left = -(activeObject.width/2);
