@@ -1,6 +1,6 @@
 <template>
   <div class="save-box">
-    <Dropdown style="margin-left: 10px" @on-click="saveWith">
+    <Dropdown style="margin-left: 10px" @on-click="saveJson">
       <Button type="primary" size="small" style="font-size:11px" @click="saveJson">
         {{saveType}}
       </Button>
@@ -10,7 +10,6 @@
 
 <script>
 import select from '@/mixins/select';
-import { v4 as uuid } from 'uuid';
 import axios from "axios";
 export default {
   name: 'saveBar',
@@ -34,7 +33,40 @@ export default {
     saveWith(type) {
       this[type]();
     },
-    
+    // saveJson() {
+    //   console.log(this.canvas.c.getObjects())
+    //   console.log(this.canvas.c.toJSON())
+
+    //   const dataUrl = this.canvas.editor.getJson();
+    //   const fileStr = `data:text/json;charset=utf-8,${encodeURIComponent(
+    //     JSON.stringify(dataUrl, null, '\t')
+    //   )}`;
+    //   this.downFile(fileStr, 'json');
+    // },
+    // saveImg() {
+    //   const workspace = this.canvas.c.getObjects().find((item) => item.id === 'workspace');
+    //   const { left, top, width, height } = workspace;
+    //   const option = {
+    //     name: 'New Image',
+    //     format: 'png',
+    //     quality: 1,
+    //     left,
+    //     top,
+    //     width,
+    //     height,
+    //   };
+    //   this.canvas.c.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    //   const dataUrl = this.canvas.c.toDataURL(option);
+    //   this.downFile(dataUrl, 'png');
+    // },    
+    // downFile(fileStr, fileType) {
+    //   const anchorEl = document.createElement('a');
+    //   anchorEl.href = fileStr;
+    //   anchorEl.download = `${uuid()}.${fileType}`;
+    //   document.body.appendChild(anchorEl); // required for firefox
+    //   anchorEl.click();
+    //   anchorEl.remove();
+    // },        
     saveJson() {
       if(this.saveType == "Save Image"){
         const dataUrl = this.canvas.editor.getJson();

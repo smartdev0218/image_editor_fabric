@@ -136,7 +136,7 @@ class Editor extends EventEmitter {
   }
 
   getJson() {
-    return this.canvas.toJSON(['id', 'gradientAngle', 'selectable', 'hasControls']);
+    return this.canvas.toJSON(['id','item_name', 'gradientAngle', 'selectable', 'hasControls',"fillState","borderState"]);
   }
 
   /**

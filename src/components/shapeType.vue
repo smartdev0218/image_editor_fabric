@@ -145,7 +145,7 @@
               Fill
             </div>                
             <div class="col-2" style="text-align: right;">
-              <Switch size="small" v-model="fillState" @on-change="showFill" true-color="#13ce66"/>
+              <Switch size="small" v-model="fillState" @on-change="changeFillState" true-color="#13ce66"/>
             </div>
           </div>
           <div v-if="fillState">
@@ -275,26 +275,41 @@ export default {
       if(activeObject != null){
 
           //<---------------fill of rect setting ------------->
-          if(activeObject.fill != ''){
+          if(activeObject.fill != '' ||activeObject.fill != "#ffffff"){
             this.fillState = true;
             this.baseAttr.fill = activeObject.fill;
+          }else{
+            this.fillState = false
           }
           //<---------------fill of rect setting ------------->
 
           // if(activeObject.)  filter portion
 
           // <---------border of rect setting ---------->
+          console.log(activeObject.stroke,activeObject.strokeWidth)
           if(activeObject.stroke != ''){
             this.borderState = true;
             this.baseAttr.stroke = activeObject.stroke;
+          }else{
+            this.borderState = false
           }
           if(activeObject.strokeWidth != 0){
             this.borderState = true;
             this.baseAttr.strokeWidth = activeObject.strokeWidth;
-          }            
+          }   else{
+            this.borderState = false
+          }         
           // <---------border of rect setting ---------->
       }      
     },
+    changeFillState(value){
+      if(value == false){
+        const activeObject = this.canvas.c.getActiveObject();
+        activeObject.set('fill','#ffffff');
+        this.baseAttr.fill = '';
+        this.canvas.c.renderAll();
+      }      
+    } ,   
     changeBorderState(value){
       if(value == false){
         const activeObject = this.canvas.c.getActiveObject();
@@ -306,10 +321,17 @@ export default {
       }
     },    
     showBorder(){
-        this.borderState ? this.borderState = false : this.borderState = true
+      this.baseAttr.borderState ? this.baseAttr.borderState = false : this.baseAttr.borderState = true;
+      const activeObject = this.canvas.c.getActiveObjects()[0];     
+      activeObject.set("borderState", this.baseAttr.borderState);
+      this.canvas.c.renderAll();         
     },
     showFill(){
-        this.fillState ? this.fillState = false : this.fillState = true
+      console.log(this.baseAttr.fillState);
+      this.baseAttr.fillState ? this.baseAttr.fillState = false : this.baseAttr.fillState = true;
+      const activeObject = this.canvas.c.getActiveObjects()[0];     
+      activeObject.set("fillState", this.baseAttr.fillState);
+      this.canvas.c.renderAll(); 
     },    
     changeCommon(key, evt) {
       const activeObject = this.canvas.c.getActiveObjects()[0];

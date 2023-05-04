@@ -59,43 +59,41 @@ export default {
       height: 900,
     });
 
-    // axios.get('http://localhost:3000/feed-image')
-    //   .then(resp => {
-    //       var data = resp.data['feed-image'];
-    //       data.forEach((e ,i)=> {
-    //       var jsonFile = JSON.stringify(data[i]);
-    //       downFontByJSON(jsonFile).then(() => {
-    //           canvas.c.loadFromJSON(jsonFile, () => {
-    //             canvas.c.renderAll.bind(canvas.c);
-    //               const workspace = canvas.c.getObjects().find((item) => item.id === 'workspace');
-    //               const { left, top, width, height } = workspace;                  
-    //               workspace.set('selectable', false);
-    //               workspace.set('hasControls', false);
-    //               canvas.c.requestRenderAll();
-    //               canvas.c.renderAll();
-    //               canvas.c.requestRenderAll();
+    axios.get('http://localhost:3000/feed-image')
+      .then(resp => {
+          var data = resp.data['feed-image'];
+          data.forEach((e ,i)=> {
+          var jsonFile = JSON.stringify(data[i]);
+            canvas.c.loadFromJSON(jsonFile, () => {
+              canvas.c.renderAll.bind(canvas.c);
+                const workspace = canvas.c.getObjects().find((item) => item.id === 'workspace');
+                const { left, top, width, height } = workspace;                  
+                workspace.set('selectable', false); 
+                workspace.set('hasControls', false);
+                canvas.c.requestRenderAll();
+                canvas.c.renderAll();
+                canvas.c.requestRenderAll();
 
-    //               const option = {
-    //                 name: 'New Image',
-    //                 format: 'png',
-    //                 quality: 1,
-    //                 left,
-    //                 top,
-    //                 width,
-    //                 height,
-    //               };
-    //               canvas.c.setViewportTransform([1, 0, 0, 1, 0, 0]);
-    //               const dataUrl = canvas.c.toDataURL(option);
-    //               document.getElementById("image"+i).src = dataUrl
-    //           });
-    //         });          
+                const option = {
+                  name: 'New Image',
+                  format: 'png',
+                  quality: 1,
+                  left,
+                  top,
+                  width,
+                  height,
+                };
+                canvas.c.setViewportTransform([1, 0, 0, 1, 0, 0]);
+                const dataUrl = canvas.c.toDataURL(option);
+                document.getElementById("image"+i).src = dataUrl
+            });
 
-    //       });          
+          });          
 
-    //   })
-    //   .catch(error => {
-    //       console.log(error);
-    // });   
+      })
+      .catch(error => {
+          console.log(error);
+    });     
   },
 };
 </script>

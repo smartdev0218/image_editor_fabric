@@ -118,9 +118,10 @@
             </Select>              
             </div>
             <div class="col-3" style="">
-              <Button class="ivu-btn ivu-btn-text">
+              <Button class="ivu-btn ivu-btn-text" @click="uploadFontClick">
                 Add custom font
                 <Icon type="ios-cloud-upload-outline" />
+                <input type="file" id="uploadFont" @change="uploadFont" style="display:none" accept=".woff,.ttf"/>
               </Button>
             </div>
           </div>
@@ -285,7 +286,7 @@
               <Color style="margin-top:-10px;margin-left:10px;width:100%"  @change="(value) => changeSelectFillType('colorFilter', value)"></Color>
             </div>
             <div class="col-6">
-              <Select @on-change="changeSelectFillType">
+              <Select @on-change="(value) => changeSelectFillType('textFilter', value)">
                 <Option  v-for="item in fillType" :value="item" :key="'fill-' + item">{{ item }}</Option>
               </Select>
             </div>
@@ -357,7 +358,9 @@
 import select from '@/mixins/select';
 import Color from './color.vue';
 import Align from './align.vue';
-
+import $ from "jquery";
+import FontFaceObserver from 'fontfaceobserver';
+import fontList from '@/assets/fonts/font';
 export default {
     mixins: [select],
     props:['mSelectOneTypeProps'],
@@ -383,6 +386,7 @@ export default {
           
           // font properties
           fontFamilyList: ["Arial","Helvetica","Myriad Pro","Delicious","Verdana","Georgia","Hoefler Text","Courier", "Comic Sans MS" ,"Impact" ,"Monaco" ,"Optima"],
+          // fontFamilyList: fontList.map((item) => item.fontFamily),
           fillType: [
               'normal',
               'multiply',
@@ -483,24 +487,23 @@ export default {
       })       
       this.event.on('selectOne', (e) => {
         if(e[0].type == "group"){
-          if(e[0]._objects[1].type == "i-text"){
-            const activeObject = e[0]._objects[1];
-            this.activeObject = activeObject;
-            this.fontAttr.string = activeObject.get('text');
-            this.fontAttr.fontSize = activeObject.get('fontSize');
-            this.fontAttr.fontFamily = activeObject.get('fontFamily');
-            this.fontAttr.lineHeight = activeObject.get('lineHeight');
-            this.fontAttr.textAlign = activeObject.get('textAlign');
-            this.fontAttr.underline = activeObject.get('underline');
-            this.fontAttr.linethrough = activeObject.get('linethrough');
-            this.fontAttr.charSpacing = activeObject.get('charSpacing');
-            this.fontAttr.overline = activeObject.get('overline');
-            this.fontAttr.fontStyle = activeObject.get('fontStyle');
-            this.fontAttr.textBackgroundColor = activeObject.get('textBackgroundColor');
-            this.fontAttr.fontWeight = activeObject.get('fontWeight');            
-          }
+          const activeObject = e[0]._objects[1];
+          this.activeObject = activeObject;
+          this.fontAttr.string = activeObject.get('text');
+          this.fontAttr.fontSize = activeObject.get('fontSize');
+          this.fontAttr.fontFamily = activeObject.get('fontFamily');
+          this.fontAttr.lineHeight = activeObject.get('lineHeight');
+          this.fontAttr.textAlign = activeObject.get('textAlign');
+          this.fontAttr.underline = activeObject.get('underline');
+          this.fontAttr.linethrough = activeObject.get('linethrough');
+          this.fontAttr.charSpacing = activeObject.get('charSpacing');
+          this.fontAttr.overline = activeObject.get('overline');
+          this.fontAttr.fontStyle = activeObject.get('fontStyle');
+          this.fontAttr.textBackgroundColor = activeObject.get('textBackgroundColor');
+          this.fontAttr.fontWeight = activeObject.get('fontWeight');
         }
-      });
+            
+        });
 
 
 
@@ -515,18 +518,15 @@ export default {
           const activeObject = this.canvas.c.getActiveObject()._objects[0];
           if (activeObject) {
             const stroke = this.strokeDashList.find((item) => item.label === key);
-            if(stroke.label){
-              activeObject.set('strokeWidth',0);
-            }
-            activeObject.set(stroke.value);
+            activeObject.set(stroke.value).setCoords();
             this.canvas.c.renderAll();
           }
         },      
         changeBorderState(value){
           if(value == false){
             const activeObject = this.canvas.c.getActiveObject()._objects[0];
-            activeObject.set('stroke','');
-            activeObject.set('strokeWidth',0);
+            activeObject.set('stroke','').setCoords();
+            activeObject.set('strokeWidth',0).setCoords();
             this.baseAttr.strokeWidth = 0;
             this.baseAttr.stroke = '';
             this.canvas.c.renderAll();
@@ -574,45 +574,90 @@ export default {
           if(activeObject){
             if(activeObject.type == "group"){
               if(activeObject.width<activeObject._objects[1].width){
-                activeObject.set("width",activeObject._objects[1].width);
-                activeObject._objects[0].set("width",activeObject._objects[1].width);
-                activeObject._objects[0].set("left",-(activeObject._objects[1].width/2));
-                activeObject.set("width",activeObject._objects[1].width);
-                activeObject._objects[1].set("left",-activeObject._objects[1].width/2);
+                activeObject.set("width",activeObject._objects[1].width).setCoords();
+                activeObject._objects[0].set("width",activeObject._objects[1].width).setCoords();
+                activeObject._objects[0].set("left",-(activeObject._objects[1].width/2)).setCoords();
+                activeObject.set("width",activeObject._objects[1].width).setCoords();
+                activeObject._objects[1].set("left",-activeObject._objects[1].width/2).setCoords();
                 this.canvas.c.renderAll();
                 this.reSetObj();
                 return;
               }
               if(activeObject.height<activeObject._objects[1].height){
                 activeObject.set("height",activeObject._objects[1].height).setCoords();
-                activeObject._objects[1].set("top",-activeObject._objects[1].height/2);
+                activeObject._objects[1].set("top",-activeObject._objects[1].height/2).setCoords();
                 this.canvas.c.renderAll();
                 return;
               }              
             }
           }
-
-
         },      
+
+        uploadFontClick(){
+          $("#uploadFont").click();
+        },
+
+        uploadFont(e){
+          var files = e.target.files[0];
+          var fontName = files.name.split('.')[0];
+
+          // const font = new FontFaceObserver(fontName);
+          const activeObject = this.canvas.c.getActiveObject()._objects[1];
+          if (this.fontFamilyList.includes(fontName)) {
+            activeObject && activeObject.set('fontFamily', fontName).setCoords();
+            setTimeout(()=>{
+              this.canvas.c.renderAll();
+            },300);
+            return;
+
+          }else{
+            this.fontFamilyList.push(fontName);
+            activeObject && activeObject.set('fontFamily', fontName).setCoords();
+            setTimeout(()=>{
+              this.canvas.c.renderAll();
+            },300);
+            return;    
+
+          }
+          // this.$Spin.show();
+          // font
+          //   .load(null, 150000)
+          //   .then(() => {
+
+          //     const activeObject = this.canvas.c.getActiveObjects()[0];
+          //     activeObject && activeObject.set('fontFamily', fontName);
+          //     this.canvas.c.renderAll();
+          //     this.$Spin.hide();
+          //   })
+          //   .catch((err) => {
+          //     console.log(err);
+          //     this.$Spin.hide();
+          //   });
+
+        },
         // <!----------- control box size   -------->
-        changeSelectFillType(value){
-          
+        changeSelectFillType(key,value){
+          const activeObject = this.canvas.c.getActiveObject()._objects[0];
+          if(key == "colorFilter"){
+            activeObject.set("fill",value).setCoords();
+            this.canvas.c.renderAll();
+          }
+          if(key == "textFilter"){
+
+            // canvas.renderAll();            
+          }
             // switch(value){
             //     case "hue":
             //             let filter = new fabric.Image.filters.HueRotation({
             //                             rotation: value,
             //                             });
-            //         console.log(this.canvas.c.getActiveObject())
             //             this.canvas.c.getActiveObject()[0].filters = [];
             //             this.canvas.c.getActiveObject()[0].filters.push(filter);
             //             this.canvas.c.getActiveObject()[0].applyFilters();                                        
-            //         // console.log(this.canvas.c.getActiveObject().filters)
-            //         // console.log(this.canvas.c.getActiveObject())
             //         // this.canvas.c.getActiveObject()[0].applyFilterValue(21, this.checked && new f.HueRotation({
             //         //     rotation: value,
             //         // }));
             // }
-            // console.log(value)
         },        
         showBorder(){
             this.borderState ? this.borderState = false : this.borderState = true
@@ -629,12 +674,12 @@ export default {
             if(evt == 'shorten'){
               this.showModeText = "shorten"
               if(150 >=string.length && string.length >= 50){
-                activeObject.set("fontSize",21);
+                activeObject.set("fontSize",21).setCoords();
                 this.canvas.c.renderAll();
                 return;
               }
               if(250>=string.length&&string.length >= 150){
-                activeObject.set("fontSize",18);
+                activeObject.set("fontSize",18).setCoords();
                 this.canvas.c.renderAll();
                 return;
               }
@@ -649,7 +694,7 @@ export default {
                 // if(string.length >20){
                   
                 // }
-                activeObject.set("fontSize",activeObject.fontSize);
+                activeObject.set("fontSize",activeObject.fontSize).setCoords();
             }
             this.canvas.c.renderAll();
         },
@@ -661,28 +706,28 @@ export default {
         changeFontWeight(key, value) {
             const nValue = value === 'normal' ? 'bold' : 'normal';
             this.fontAttr.fontWeight = nValue;
-            this.canvas.c.getActiveObject()._objects[1].set(key, nValue);
+            this.canvas.c.getActiveObject()._objects[1].set(key, nValue).setCoords();
             this.canvas.c.renderAll();
         },
         // italics
         changeFontStyle(key, value) {
             const nValue = value === 'normal' ? 'italic' : 'normal';
             this.fontAttr.fontStyle = nValue;
-            this.canvas.c.getActiveObject()._objects[1].set(key, nValue);
+            this.canvas.c.getActiveObject()._objects[1].set(key, nValue).setCoords();
             this.canvas.c.renderAll();
         },
         // middle stroke
         changeLineThrough(key, value) {
             const nValue = value === false;
             this.fontAttr.linethrough = nValue;
-            this.canvas.c.getActiveObject()._objects[1].set(key, nValue);
+            this.canvas.c.getActiveObject()._objects[1].set(key, nValue).setCoords();
             this.canvas.c.renderAll();
         },
         // underline
         changeUnderline(key, value) {
             const nValue = value === false;
             this.fontAttr.underline = nValue;
-            this.canvas.c.getActiveObject()._objects[1].set(key, nValue);
+            this.canvas.c.getActiveObject()._objects[1].set(key, nValue).setCoords();
             this.canvas.c.renderAll();
         },        
         //delete shortTag
@@ -710,8 +755,10 @@ export default {
         },
         // modify font
         changeFontFamily(fontName) {
+          // if (!fontName) return;
+
           if (!fontName) return;
-          this.canvas.c.getActiveObject()._objects[1].set("fontFamily",fontName);
+          this.canvas.c.getActiveObject()._objects[1].set("fontFamily",fontName).setCoords();
           this.canvas.c.renderAll();
 
         },   
@@ -719,39 +766,48 @@ export default {
         //change activeObject
         changeCommon(key,evt){
           if(key=="width" ||key=="height" ||key=="top" ||key=="left"||key=="padding"){
+
             this.activeObject = this.canvas.c.getActiveObject();
             this.changeProperty(key,evt);
             return;
+
           }else if(key=="stroke" || key=="strokeWidth"){
+
             this.activeObject = this.canvas.c.getActiveObject()._objects[0]
             this.changeProperty(key,evt);
             return;
+
           }else{
+
             this.activeObject = this.canvas.c.getActiveObject()._objects[1]
             this.changeProperty(key,evt);
-            return;            
+            return;   
+
           }
         },     
         //change property
         changeProperty(key, evt) {
+
             if (key === 'width'|| key === 'height') {
+
               this.activeObject.set(key, Number(evt.target.value));
-              this.activeObject._objects[0].set("width",this.activeObject.width);
-              this.activeObject._objects[0].set("left",-(this.activeObject.width/2));    
-              this.activeObject._objects[0].set("height",this.activeObject.height);              
-              this.activeObject._objects[0].set("top",-(this.activeObject.height / 2));
+              this.activeObject._objects[0].set("width",this.activeObject.width).setCoords();
+              this.activeObject._objects[0].set("left",-(this.activeObject.width/2)).setCoords();    
+              this.activeObject._objects[0].set("height",this.activeObject.height).setCoords();              
+              this.activeObject._objects[0].set("top",-(this.activeObject.height / 2)).setCoords();
               this.canvas.c.requestRenderAll();
               this.reSetObj();
               return;
+
             }       
             
             if (key === 'stroke') {
-              this.activeObject.set(key, evt);
+              this.activeObject.set(key, evt).setCoords();
               this.canvas.c.renderAll();
               return;
             }      
             if (key === 'strokeWidth') {
-              this.activeObject.set(key, Number(evt.target.value));
+              this.activeObject.set(key, Number(evt.target.value)).setCoords();
               this.canvas.c.renderAll();
               return;
             }                  
@@ -764,12 +820,12 @@ export default {
               }
               if(this.activeObject.tempValue<evt.target.value){
                 
-                rect.set("width",Number(this.activeObject.width)+ Number(evt.target.value)*2);
-                rect.set("height",Number(this.activeObject.height) + Number(evt.target.value)*2);
-                this.activeObject.set("width",Number(this.activeObject.width) + Number(evt.target.value)*2);
-                this.activeObject.set("height",Number(this.activeObject.height) + Number(evt.target.value)*2);
-                rect.set("left",rect.left+evt.target.value);
-                rect.set("top",rect.top+evt.target.value);
+                rect.set("width",Number(this.activeObject.width)+ Number(evt.target.value)*2).setCoords();
+                rect.set("height",Number(this.activeObject.height) + Number(evt.target.value)*2).setCoords();
+                this.activeObject.set("width",Number(this.activeObject.width) + Number(evt.target.value)*2).setCoords();
+                this.activeObject.set("height",Number(this.activeObject.height) + Number(evt.target.value)*2).setCoords();
+                rect.set("left",rect.left+evt.target.value).setCoords();
+                rect.set("top",rect.top+evt.target.value).setCoords();
 
 
               }else{
@@ -790,38 +846,38 @@ export default {
               return;                
             }
             if(key == "text"){
-              this.activeObject.set("text",evt);
+              this.activeObject.set("text",evt).setCoords();
               const activeObject = this.canvas.c.getActiveObject();
               if(activeObject.width<activeObject._objects[1].width){
-                activeObject._objects[1].set("scaleX",activeObject.width/activeObject._objects[1].width);
-                activeObject._objects[1].set("scaleY",activeObject.width/activeObject._objects[1].width);
-                activeObject._objects[0].set("width",activeObject.width);
-                activeObject._objects[1].set("width",activeObject.width);
+                activeObject._objects[1].set("scaleX",activeObject.width/activeObject._objects[1].width).setCoords();
+                activeObject._objects[1].set("scaleY",activeObject.width/activeObject._objects[1].width).setCoords();
+                activeObject._objects[0].set("width",activeObject.width).setCoords();
+                activeObject._objects[1].set("width",activeObject.width).setCoords();
                 this.canvas.c.renderAll();
               }
               return;
             }
             // Rotation Angle Adaptation
             if (key === 'angle') {
-                this.activeObject.rotate(Number(evt.target.value));
+                this.activeObject.rotate(Number(evt.target.value)).setCoords();
                 this.canvas.c.renderAll();
                 return;
             }
             if(key == "fill"){
               this.activeObject = this.canvas.c.getActiveObject()._objects[1];
-              this.activeObject.set("fill", evt)
+              this.activeObject.set("fill", evt).setCoords()
               this.canvas.c.renderAll();
               return;              
             }
             if(key == "round"){
               this.activeObject = this.canvas.c.getActiveObject()._objects[0];
-              this.activeObject.set("ry", Number(evt.target.value))
-              this.activeObject.set("rx", Number(evt.target.value))
+              this.activeObject.set("ry", Number(evt.target.value)).setCoords();
+              this.activeObject.set("rx", Number(evt.target.value)).setCoords();
               this.canvas.c.renderAll();
               return;
             }
             
-            this.activeObject && this.activeObject.set(key, Number(evt.target.value));
+            this.activeObject && this.activeObject.set(key, Number(evt.target.value)).setCoords();
             // this.checkTextboxSize();
             this.canvas.c.renderAll();
         },    

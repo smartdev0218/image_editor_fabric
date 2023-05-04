@@ -93,14 +93,27 @@ export default {
       var group = new fabric.Group([rect, text]);
 	    group.setCoords();	
       group.id = uuid();
-      group.name = 'everything_is_fine'
-      group.set("left",0-group.width)
+      group.set("left",0-group.width);
+      group.customType = "text";
       group.set("padding",10);      
+      var name = this.getName('text');
+      group["item_name"] = name;
       this.canvas.c.add(group);
       rect.set("width",group.width*group.scaleX+5);
       rect.set("height",group.height*group.scaleY+5);
       this.canvas.c.centerObject(group);
       this.canvas.c.setActiveObject(group);
+    },
+    
+    getName(type){
+      var objects = this.canvas.c.getObjects();
+      var count = 1;
+      objects.forEach(arg=>{
+        if(arg.type == type){
+          count++;
+        }
+      });
+      return type+"#"+count;
     },
     addImg(e) {
       const imgEl = e.target.cloneNode(true);
@@ -142,25 +155,29 @@ export default {
       this.canvas.c.setActiveObject(triangle);
     },
     addCircle(option) {
+      var name = this.getName('circle');
       const circle = new this.fabric.Circle({
         left:-200,
         radius: 150,
         fill: 'yellow',
         id: uuid(),
-        name: 'circle',
+        item_name: name,
       });
+      
       this.canvas.c.add(circle);
       this.canvas.c.centerObject(circle);
       this.canvas.c.setActiveObject(circle);
     },
+    
     addRect(option) {
+      var name = this.getName('rect');      
       const rect = new this.fabric.Rect({
         left:-200,
         fill: 'blue',
         width: 400,
         height: 400,
         id: uuid(),
-        name: 'rect',
+        item_name: name,
       });
       this.canvas.c.add(rect);
       this.canvas.c.centerObject(rect);

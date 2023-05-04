@@ -1,5 +1,8 @@
 <template>
+<div>
     <DropdownItem @click="insertImg"><Icon type="ios-image" /><span style="margin-left:10px">Upload image</span></DropdownItem>
+    <DropdownItem @click="insert"><Icon type="ios-image" /><span style="margin-left:10px">json</span></DropdownItem>
+    </div>
 </template>
 
 <script>
@@ -33,6 +36,44 @@ export default {
     
   },  
   methods: {
+    insert() {
+      selectFiles({ accept: '.json' }).then((files) => {
+        const [file] = files;
+        const reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = () => {
+          this.insertSvgFile(reader.result);
+        };
+      });
+    },
+    insertSvgFile(jsonFile) {
+      // 加载字体后导入
+      // console.log(this.canvas.c.toJSON())
+
+      // downFontByJSON(jsonFile).then(() => {
+      // console.log(jsonFile);
+      console.log(jsonFile);
+      setTimeout(() => {
+          this.canvas.c.loadFromJSON(
+          jsonFile,
+          this.canvas.c.renderAll.bind(this.canvas.c));        
+      }, 1000);
+
+        // this.canvas.c.loadFromJSON(jsonFile, () => {
+        //   this.canvas.c.renderAll.bind(this.canvas.c);
+        //   setTimeout(() => {
+        //     const workspace = this.canvas.c.getObjects().find((item) => item.id === 'workspace');
+        //     workspace.set('selectable', false);
+        //     workspace.set('hasControls', false);
+        //     this.canvas.c.requestRenderAll();
+        //     this.canvas.editor.editorWorkspace.setSize(workspace.width, workspace.height);
+        //     this.canvas.c.renderAll();
+        //     this.canvas.c.requestRenderAll();
+        //   }, 100);
+        // });
+      // });
+    },
+
     insertTypeHand(type) {
       this[type]();
     },
@@ -57,19 +98,35 @@ export default {
             // Create a picture object
             const imgInstance = new this.fabric.Image(imgEl, {
               id: "showBg",
-              name: 'picture1',
+              name: 'image1',
             });
-            imgInstance.scale(0.4);
-            // set zoom
-            this.canvas.c.add(imgInstance);
-            this.canvas.c.centerObject(imgInstance);
-            this.canvas.c.setActiveObject(imgInstance);
+            var rect = new fabric.Rect({
+                height: 0,
+                width: 0,
+                fill: '',
+                strokeWidth:0,
+                opacity: 100,
+                id:"virtural"
+            });      
+
+            var group = new fabric.Group([rect, imgInstance]);
+            group.id = "showBg";
+            group.item_name = "image1";
+            group.customType = "image";
+            group.set("left",0-group.width);
+            
+            this.canvas.c.add(group);
+            rect.set("width",group.width*group.scaleX);
+            rect.set("height",group.height*group.scaleY);
+            this.canvas.c.centerObject(group);
+            this.canvas.c.setActiveObject(group);
             this.canvas.c.renderAll();
-            // Remove image elements from the page
+            // set zoom
             imgEl.remove();
+
+             
         };          
       }, 100);
-
     },    
     
     // insert image file
@@ -82,7 +139,7 @@ export default {
         // Create a picture object
         const imgInstance = new this.fabric.Image(imgEl, {
           id: uuid(),
-          name: 'picture1',
+          name: 'image1',
           selectable:false,
           hasControls:false,
           left:-100
@@ -99,7 +156,10 @@ export default {
 
         var group = new fabric.Group([rect, imgInstance]);
         group.id = uuid();
-        group.name = 'picture';
+        group.customType = "image";
+        group.type = "group";
+        var name = this.getName('image');
+        group["item_name"] = name;
         group.set("left",0-group.width);
         this.canvas.c.add(group);
         rect.set("width",group.width*group.scaleX);
@@ -112,6 +172,16 @@ export default {
         imgEl.remove();
       };
     },
+    getName(type){
+      var objects = this.canvas.c.getObjects();
+      var count = 1;
+      objects.forEach(arg=>{
+        if(arg.type == type){
+          count++;
+        }
+      })
+      return type+"#"+count;
+    },    
     insertFileFromJSON(id){
       axios.get('http://localhost:3000/feed-image/'+id)
         .then(resp => {
