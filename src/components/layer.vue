@@ -27,12 +27,12 @@
               </Button>
               <template #list>
                   <DropdownMenu>
-                    <DropdownItem  size="small">
-                      <Button @click="clone(element.id)" icon="ios-copy" type="text" size="small"></Button>
+                    <DropdownItem  size="small" @click="clone(element.id)">
+                      <Button  icon="ios-copy" type="text" size="small"></Button>
                       <span style="font-size:10px">Duplicate layer1</span>
                     </DropdownItem>
-                    <DropdownItem size="small">
-                      <Button @click="del(element.id)" icon="ios-trash" type="text" size="small"></Button>
+                    <DropdownItem size="small" @click="del(element.id)">
+                      <Button  icon="ios-trash" type="text" size="small"></Button>
                       <span style="font-size:10px">Delete</span>
                     </DropdownItem>
                   </DropdownMenu>
