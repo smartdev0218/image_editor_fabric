@@ -52,7 +52,6 @@ export default {
 
       // downFontByJSON(jsonFile).then(() => {
       // console.log(jsonFile);
-      console.log(jsonFile);
       setTimeout(() => {
           this.canvas.c.loadFromJSON(
           jsonFile,

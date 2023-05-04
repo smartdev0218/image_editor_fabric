@@ -275,19 +275,19 @@ export default {
       if(activeObject != null){
 
           //<---------------fill of rect setting ------------->
-          if(activeObject.fill != '' ||activeObject.fill != "#ffffff"){
+          if(activeObject.fill == "#ffffff"){
+            this.fillState = false            
+
+          }else{
             this.fillState = true;
             this.baseAttr.fill = activeObject.fill;
-          }else{
-            this.fillState = false
           }
           //<---------------fill of rect setting ------------->
 
           // if(activeObject.)  filter portion
 
           // <---------border of rect setting ---------->
-          console.log(activeObject.stroke,activeObject.strokeWidth)
-          if(activeObject.stroke != ''){
+          if(activeObject.stroke != null){
             this.borderState = true;
             this.baseAttr.stroke = activeObject.stroke;
           }else{
@@ -327,7 +327,6 @@ export default {
       this.canvas.c.renderAll();         
     },
     showFill(){
-      console.log(this.baseAttr.fillState);
       this.baseAttr.fillState ? this.baseAttr.fillState = false : this.baseAttr.fillState = true;
       const activeObject = this.canvas.c.getActiveObjects()[0];     
       activeObject.set("fillState", this.baseAttr.fillState);

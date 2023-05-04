@@ -732,7 +732,6 @@ export default {
     },
 
     insertEmpty(file){
-      console.log(this.canvas.c.getActiveObject())
       var originLeft = this.canvas.c.getActiveObjects()[0].left;
       var originTop = this.canvas.c.getActiveObjects()[0].top;
       var originHeight = this.canvas.c.getActiveObjects()[0].height;
