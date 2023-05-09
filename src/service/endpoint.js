@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const server_url='http://localhost:3000' ;
+const server_url='https://image-editor-fabric-server.vercel.app' ;
 
 export const createUserTemp=(data) =>{
     return axios.post(server_url+'/user/create-template',data);
