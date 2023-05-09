@@ -38,7 +38,7 @@ import EditorWorkspace from '@/core/EditorWorkspace';
 
 import { fabric } from 'fabric';
 import Editor from '@/core';
-import {getAllUserTemps} from "@/service/endpoint";
+import {getAllUserTemps} from "@/service/endPoint";
 const event = new EventHandle();
 const canvas = {};
 export default {
