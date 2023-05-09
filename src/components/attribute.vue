@@ -843,6 +843,9 @@ export default {
 </script>
 
 <style scoped lang="less">
+.input-size{
+  width:20%
+}  
 Button {
   padding: 0px 5px;
 }
