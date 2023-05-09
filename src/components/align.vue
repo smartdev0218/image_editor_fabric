@@ -1,6 +1,7 @@
 <template>
   <div  class="box attr-item">
     <!-- Horizontal alignment -->
+    
     <Tooltip :content="'left'">
       <Button  @click="left" size="small" type="text">
         <svg
