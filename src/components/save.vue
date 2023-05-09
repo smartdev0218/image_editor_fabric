@@ -76,17 +76,13 @@ export default {
       });      
     },
     saveJson() {
+      var name = '';
+      if(document.getElementById("canvasName") != null){
+        name = document.getElementById("canvasName").value;
+      }      
       if(this.saveType == "Save Image"){
         const dataUrl = this.canvas.editor.getJson();
-        var name = '';
-        if(document.getElementById("canvasName") != null){
-          name = document.getElementById("canvasName").value;
-          // if(document.getElementById("canvasName").value == ''){
-          //   this.noticeMsg("Input Name Field.")
-          //   return false;          
-          // }  
 
-        }
 
         dataUrl.template_id = uuid();
         dataUrl.template_name = name;
@@ -97,11 +93,10 @@ export default {
         });
 
       }else{
-
         const dataUrl = this.canvas.editor.getJson();
-        dataUrl.template_id = "1";
-        dataUrl.template_name = document.getElementById("canvasName").value;
-        dataUrl.template_image_url = this.getImageUrl();     
+        dataUrl.template_id = this.param_id;
+        dataUrl.template_name = name;
+        dataUrl.template_image_url = this.canvas.editor.getImageUrl();     
 
         updateUserTemp(this.param_id,{data:dataUrl}).then((res)=>{
           alert(res.data)
