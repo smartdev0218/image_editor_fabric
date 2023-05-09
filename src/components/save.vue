@@ -10,7 +10,8 @@
 
 <script>
 import select from '@/mixins/select';
-import axios from "axios";
+import {createUserTemp,updateUserTemp} from "@/service/endPoint";
+import {v4 as uuid} from "uuid";
 export default {
   name: 'saveBar',
   inject:["path","param_id"],
@@ -34,8 +35,6 @@ export default {
       this[type]();
     },
     // saveJson() {
-    //   console.log(this.canvas.c.getObjects())
-    //   console.log(this.canvas.c.toJSON())
 
     //   const dataUrl = this.canvas.editor.getJson();
     //   const fileStr = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -66,25 +65,47 @@ export default {
     //   document.body.appendChild(anchorEl); // required for firefox
     //   anchorEl.click();
     //   anchorEl.remove();
-    // },        
+    // },
+
+
+
+    noticeMsg(title,desc=''){
+      this.$Notice.warning({
+          title: title,
+          desc: desc
+      });      
+    },
     saveJson() {
       if(this.saveType == "Save Image"){
         const dataUrl = this.canvas.editor.getJson();
-        const fileStr = `data:text/json;charset=utf-8,${encodeURIComponent(
-          JSON.stringify(dataUrl, null, '\t')
-        )}`;
-        axios.post("http://localhost:3000/feed-image/create",{data:dataUrl}).then((res)=>{
-          alert(res.data)
-        })
+        var name = '';
+        if(document.getElementById("canvasName") != null){
+          name = document.getElementById("canvasName").value;
+          // if(document.getElementById("canvasName").value == ''){
+          //   this.noticeMsg("Input Name Field.")
+          //   return false;          
+          // }  
+
+        }
+
+        dataUrl.template_id = uuid();
+        dataUrl.template_name = name;
+        dataUrl.template_image_url = this.canvas.editor.getImageUrl();
+
+        createUserTemp({data:dataUrl}).then((res)=>{
+          alert(res.data);
+        });
+
       }else{
+
         const dataUrl = this.canvas.editor.getJson();
-        const fileStr = `data:text/json;charset=utf-8,${encodeURIComponent(
-          JSON.stringify(dataUrl, null, '\t')
-        )}`;
-        axios.post("http://localhost:3000/feed-image/edit/"+this.param_id,{data:dataUrl}).then((res)=>{
+        dataUrl.template_id = "1";
+        dataUrl.template_name = document.getElementById("canvasName").value;
+        dataUrl.template_image_url = this.getImageUrl();     
+
+        updateUserTemp(this.param_id,{data:dataUrl}).then((res)=>{
           alert(res.data)
         })
-        // this.downFile(fileStr, 'json');        
       }
 
     }

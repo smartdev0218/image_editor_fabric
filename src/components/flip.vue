@@ -1,11 +1,11 @@
 <template>
-    <div class="col col-lg-6">
+    <div class="col col-lg-7">
       flip
     </div>                
-    <div class="col col-lg-3">
+    <div class="input-size">
       <div class="box attr-item">
         <Tooltip :content="'flip.x'">
-          <Button  @click="flip('X')" type="text">
+          <Button  @click="flip('Y')" type="text">
             <svg
               t="1650443094178"
               class="icon"
@@ -32,7 +32,7 @@
           </Button>
         </Tooltip>
         <Tooltip :content="'flip.y'">
-          <Button :disabled="notSelectOneMode()" @click="flip('Y')" type="text">
+          <Button  @click="flip('X')" type="text">
             <svg
               t="1650443104385"
               class="icon"

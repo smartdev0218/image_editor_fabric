@@ -138,9 +138,15 @@ function deleteControl(canvas) {
   function deleteObject() {
     const activeObject = canvas.getActiveObjects();
     if (activeObject) {
-      activeObject.map((item) => canvas.remove(item));
-      canvas.requestRenderAll();
-      canvas.discardActiveObject();
+      activeObject.map((item) => {
+        if(item.id == "productImage" || item.id == "trimImage" || item.id == "nonBgImage"){
+          return false;
+        }else{
+          canvas.remove(item);
+        }
+      }); 
+      canvas.renderAll();
+      canvas.discardActiveObject();      
     }
   }
 
@@ -186,7 +192,7 @@ function rotationControl() {
 
 function initControls(canvas) {
   // delete icon
-  // deleteControl(canvas);
+  deleteControl(canvas);
   // apex icon
   peakControl(canvas);
   // middle bar icon

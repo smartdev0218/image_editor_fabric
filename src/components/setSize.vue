@@ -7,7 +7,7 @@
             <div class="col-md-11">
               <div class="image-name mt-2">
                 <label class="font-s">Image name</label>         
-                <b-form-input size="sm"></b-form-input>
+                <b-form-input size="sm" id="canvasName" v-model="canvasName"></b-form-input>
               </div>
               <div class="image-size mt-2" style="">
                 <label class="font-s">Image size</label>  
@@ -87,6 +87,7 @@ export default {
       selected: "900x900",
       width: 900,
       height: 900,
+      canvasName:''
     };
   },
   components:{
@@ -104,7 +105,7 @@ export default {
     this.canvas.c.on({
       'object:modified': this.save,
       'selection:updated': this.save,
-    });   
+    }); 
     hotkeys(keyNames.ctrlz, this.undo);        
   },    
   mounted() {
@@ -112,7 +113,7 @@ export default {
       width: this.width,
       height: this.height,
     });
-    
+    // if(name)
   },
   methods: {
 
@@ -140,16 +141,14 @@ export default {
 
     },
     changeSize(key,evt) {
+
       var value = evt.target.value
       if(key == "width"){
         this.width = value
       }else{
         this.height = value
       }
-      // this.canvas.c.discardActiveObject();
-      this.$Spin.show(); 
-      this.canvas.editor.editorWorkspace.setSize(Number(this.width), Number(this.height));
-      this.$Spin.hide(); 
+
     },
     setSize() {
       this.canvas.c.discardActiveObject();
@@ -163,15 +162,16 @@ export default {
       this.height = Number(resolution[1]);
       this.setSize();
     },
-    // width(){
-    //   this.width = Number(this.width)
-    //   this.setSize();
-
-    // },
-    // height(){
-    //   this.height = Number(this.height)
-    //   this.setSize()
-    // },
+    width(){
+      this.canvas.editor.editorWorkspace.setSize(Number(this.width), Number(this.height));
+      this.canvas.c.discardActiveObject();
+      this.canvas.c.renderAll();      
+    },
+    height(){
+      this.canvas.editor.editorWorkspace.setSize(Number(this.width), Number(this.height));
+      this.canvas.c.discardActiveObject();
+      this.canvas.c.renderAll();      
+    },
 
     selectMode(){
       if(this.selectMode === '1'){
